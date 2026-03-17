@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap');
+
+:root {
+  --bg: #f4f7fa;
+  --bg-2: #eaf2f5;
+  --surface: #ffffff;
+  --text: #102332;
+  --text-muted: #4f6676;
+  --border-soft: #d8e4ea;
+  --border-strong: #b9cdd9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  color: var(--text);
+  font-family: 'DM Sans', 'Segoe UI', sans-serif;
+  background:
+    radial-gradient(circle at 8% 10%, #d8eef2 0 14%, transparent 35%),
+    radial-gradient(circle at 90% 0%, #f8e7c9 0 11%, transparent 32%),
+    linear-gradient(170deg, var(--bg), var(--bg-2));
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Space Grotesk', 'Trebuchet MS', sans-serif;
+}
+
+p,
+label,
+input,
+button,
+select,
+textarea,
+table {
+  font-family: inherit;
+}
+/* You can add global styles to this file, and also import other style files */

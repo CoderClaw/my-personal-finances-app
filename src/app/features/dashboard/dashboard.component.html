@@ -1,0 +1,71 @@
+<app-page-header
+  title="Dashboard"
+  subtitle="Quick view of this month, upcoming payments, and recent expenses."
+></app-page-header>
+
+<section class="stats-grid">
+  <app-stat-card
+    label="Current month expenses"
+    [value]="totalExpenses"
+    hint="Sum of expenses in this month"
+  ></app-stat-card>
+
+  <app-stat-card
+    label="Monthly payments"
+    [value]="paymentTotals.scheduled"
+    [hint]="'Paid this month: ' + paymentTotals.paid"
+  ></app-stat-card>
+
+  <app-stat-card
+    label="Subscriptions (normalized monthly)"
+    [value]="normalizedSubscriptions"
+    hint="Active monthly subscriptions only (annual excluded)"
+  ></app-stat-card>
+</section>
+
+<section class="panel warning-panel">
+  <h2>Upcoming payment warnings</h2>
+
+  <app-empty-state
+    *ngIf="upcomingItems.length === 0"
+    title="No upcoming payment pressure"
+    message="Nothing overdue, no monthly bills due in 7 days, and no annual renewals due in 30 days."
+  ></app-empty-state>
+
+  <ul *ngIf="upcomingItems.length > 0" class="warning-list">
+    <li *ngFor="let item of upcomingItems" [class]="item.status">
+      <div>
+        <p class="item-title">{{ item.title }}</p>
+        <p class="item-meta">
+          {{ item.type === 'monthly-payment' ? 'Monthly payment' : 'Subscription' }}
+          · Due {{ formatDate(item.dueDate) }}
+        </p>
+      </div>
+      <div class="right">
+        <strong>{{ money(item.amount) }}</strong>
+        <span>{{ dueLabel(item) }}</span>
+        <button type="button" class="mark-paid" (click)="markPaid(item)">Mark as Paid</button>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<section class="panel">
+  <h2>Recent expenses</h2>
+
+  <app-empty-state
+    *ngIf="recentExpenses.length === 0"
+    title="No expenses yet"
+    message="Start by adding your first expense."
+  ></app-empty-state>
+
+  <ul *ngIf="recentExpenses.length > 0" class="recent-list">
+    <li *ngFor="let item of recentExpenses">
+      <div>
+        <p class="item-title">{{ item.title }}</p>
+        <p class="item-meta">{{ item.category }} · {{ formatDate(item.date) }}</p>
+      </div>
+      <strong>{{ money(item.amount) }}</strong>
+    </li>
+  </ul>
+</section>

@@ -1,0 +1,63 @@
+<app-page-header
+  title="Import / Export Settings"
+  subtitle="Backup, restore, clear local data, and choose your display currency."
+></app-page-header>
+
+<section class="panel">
+  <h2>Display currency</h2>
+  <p>Changes only how amounts are shown in the app. Your saved values are not converted.</p>
+
+  <label for="currency-select">Currency</label>
+  <select id="currency-select" [value]="selectedCurrency" (change)="onCurrencyChanged($event)">
+    <option
+      *ngFor="let option of currencyOptions"
+      [value]="option.value"
+      [selected]="option.value === selectedCurrency"
+    >
+      {{ option.label }}
+    </option>
+  </select>
+</section>
+
+<section class="panel">
+  <h2>Export all data</h2>
+  <p>Download a JSON backup including version metadata and all saved records.</p>
+  <button type="button" (click)="exportData()">Export JSON Backup</button>
+</section>
+
+<section class="panel">
+  <h2>Import from backup</h2>
+  <p>Choose a backup JSON file. If valid, you will be asked to confirm overwrite.</p>
+  <input type="file" accept="application/json,.json" (change)="onImportFileSelected($event)" />
+
+  <div *ngIf="pendingImport" class="import-preview">
+    <p>
+      Ready to import:
+      {{ pendingImport.data.expenses.length }} expenses,
+      {{ pendingImport.data.monthlyPayments.length }} monthly payments,
+      {{ pendingImport.data.subscriptions.length }} subscriptions.
+    </p>
+    <button type="button" class="danger" (click)="confirmImport()">
+      Confirm Import (Overwrite)
+    </button>
+    <button type="button" class="ghost" (click)="cancelImport()">Cancel</button>
+  </div>
+</section>
+
+<section class="panel danger-panel">
+  <h2>Clear all local data</h2>
+  <p>This permanently removes all app data from localStorage for this browser.</p>
+  <button type="button" class="danger" (click)="askClear = true">Clear All Data</button>
+</section>
+
+<p *ngIf="message" class="message success">{{ message }}</p>
+<p *ngIf="error" class="message error">{{ error }}</p>
+
+<app-confirm-dialog
+  [open]="askClear"
+  title="Clear all local data"
+  message="This action cannot be undone. Do you want to delete all stored data?"
+  confirmLabel="Clear Data"
+  (cancel)="askClear = false"
+  (confirm)="confirmClearData()"
+></app-confirm-dialog>

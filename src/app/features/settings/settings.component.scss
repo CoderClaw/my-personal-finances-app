@@ -1,0 +1,85 @@
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+p {
+  color: var(--text-muted);
+}
+
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+  font-weight: 600;
+  background: #1f7a8c;
+  color: #fff;
+}
+
+button.ghost {
+  background: #ecf3f7;
+  color: #183042;
+}
+
+button.danger {
+  background: #b8402f;
+  color: #fff;
+}
+
+input[type='file'] {
+  display: block;
+  margin-top: 0.5rem;
+}
+
+label {
+  display: inline-block;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+select {
+  display: block;
+  width: min(280px, 100%);
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  padding: 0.5rem 0.65rem;
+  background: #fff;
+  color: inherit;
+}
+
+.import-preview {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.message {
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+  font-weight: 600;
+}
+
+.message.success {
+  background: #e4f5ef;
+  color: #1f7f58;
+}
+
+.message.error {
+  background: #fff2f0;
+  color: #b8402f;
+}
+
+.danger-panel {
+  border-left: 5px solid #b8402f;
+}

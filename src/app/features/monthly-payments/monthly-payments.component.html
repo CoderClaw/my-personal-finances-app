@@ -1,0 +1,94 @@
+<app-page-header
+  title="Monthly Payments"
+  subtitle="Recurring monthly bills with paid tracking per month."
+></app-page-header>
+
+<section class="panel form-panel">
+  <h2>{{ editingId ? 'Edit monthly payment' : 'Add monthly payment' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="form-grid">
+    <label>
+      Title
+      <input type="text" formControlName="title" />
+      <small *ngIf="form.controls.title.invalid && form.controls.title.touched"
+        >Title is required.</small
+      >
+    </label>
+
+    <label>
+      Amount
+      <input type="number" min="0" step="0.01" formControlName="amount" />
+      <small *ngIf="form.controls.amount.invalid && form.controls.amount.touched"
+        >Amount must be greater than 0.</small
+      >
+    </label>
+
+    <label>
+      Due day (1-31)
+      <input type="number" min="1" max="31" formControlName="dueDay" />
+      <small *ngIf="form.controls.dueDay.invalid && form.controls.dueDay.touched"
+        >Due day must be 1-31.</small
+      >
+    </label>
+
+    <label class="wide">
+      Note (optional)
+      <textarea rows="2" formControlName="note"></textarea>
+    </label>
+
+    <div class="actions">
+      <button type="submit" [disabled]="form.invalid">{{ submitLabel }}</button>
+      <button *ngIf="editingId" type="button" class="ghost" (click)="cancelEdit()">Cancel</button>
+    </div>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Payment list</h2>
+
+  <app-empty-state
+    *ngIf="payments.length === 0"
+    title="No monthly payments yet"
+    message="Add bills like rent, utilities, and recurring payments."
+  ></app-empty-state>
+
+  <table *ngIf="payments.length > 0">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Due date (this month)</th>
+        <th>Amount</th>
+        <th>Status</th>
+        <th>Note</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of payments">
+        <td>{{ item.title }}</td>
+        <td>{{ dueDate(item) }}</td>
+        <td>{{ money(item.amount) }}</td>
+        <td>
+          <span class="status" [class]="status(item)">{{ status(item) }}</span>
+        </td>
+        <td>{{ item.note || '-' }}</td>
+        <td class="row-actions">
+          <button type="button" class="ghost" (click)="togglePaid(item)">
+            {{ isPaidThisMonth(item) ? 'Unmark Paid' : 'Mark Paid' }}
+          </button>
+          <button type="button" class="ghost" (click)="edit(item)">Edit</button>
+          <button type="button" class="danger" (click)="askDelete(item.id)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<app-confirm-dialog
+  [open]="!!deleteCandidateId"
+  title="Delete monthly payment"
+  message="This recurring payment item will be removed."
+  confirmLabel="Delete"
+  (cancel)="deleteCandidateId = ''"
+  (confirm)="confirmDelete()"
+></app-confirm-dialog>

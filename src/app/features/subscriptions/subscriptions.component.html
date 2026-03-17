@@ -1,0 +1,122 @@
+<app-page-header
+  title="Subscriptions"
+  subtitle="Manage monthly and annual subscriptions with clear monthly equivalents."
+></app-page-header>
+
+<section class="totals">
+  <article>
+    <p>Monthly subscriptions total</p>
+    <h3>{{ totalMonthlySubscriptionsCost }}</h3>
+  </article>
+  <article>
+    <p>Annual subscriptions total</p>
+    <h3>{{ totalAnnualSubscriptionsCost }}</h3>
+  </article>
+  <article>
+    <p>Active monthly total (annual excluded)</p>
+    <h3>{{ normalizedMonthlyTotal }}</h3>
+  </article>
+</section>
+
+<section class="panel form-panel">
+  <h2>{{ editingId ? 'Edit subscription' : 'Add subscription' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="form-grid">
+    <label>
+      Title
+      <input type="text" formControlName="title" />
+      <small *ngIf="form.controls.title.invalid && form.controls.title.touched"
+        >Title is required.</small
+      >
+    </label>
+
+    <label>
+      Amount
+      <input type="number" min="0" step="0.01" formControlName="amount" />
+      <small *ngIf="form.controls.amount.invalid && form.controls.amount.touched"
+        >Amount must be greater than 0.</small
+      >
+    </label>
+
+    <label>
+      Billing cycle
+      <select formControlName="billingCycle">
+        <option *ngFor="let cycle of cycles" [value]="cycle">{{ cycle }}</option>
+      </select>
+    </label>
+
+    <label>
+      Renewal date
+      <input type="date" formControlName="renewalDate" />
+      <small *ngIf="form.controls.renewalDate.invalid && form.controls.renewalDate.touched"
+        >Renewal date is required.</small
+      >
+    </label>
+
+    <label class="toggle">
+      <input type="checkbox" formControlName="active" />
+      Active
+    </label>
+
+    <label class="wide">
+      Note (optional)
+      <textarea rows="2" formControlName="note"></textarea>
+    </label>
+
+    <div class="actions">
+      <button type="submit" [disabled]="form.invalid">{{ submitLabel }}</button>
+      <button *ngIf="editingId" type="button" class="ghost" (click)="cancelEdit()">Cancel</button>
+    </div>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Subscription list</h2>
+
+  <app-empty-state
+    *ngIf="subscriptions.length === 0"
+    title="No subscriptions yet"
+    message="Add tools and services you pay monthly or yearly."
+  ></app-empty-state>
+
+  <div class="cards" *ngIf="subscriptions.length > 0">
+    <article class="card" *ngFor="let item of subscriptions" [class.inactive]="!item.active">
+      <div class="card-top">
+        <h3>{{ item.title }}</h3>
+        <span class="status" [class.inactive]="!item.active">{{
+          item.active ? 'active' : 'inactive'
+        }}</span>
+      </div>
+
+      <p class="meta">{{ item.billingCycle }} · Renewal {{ formatDate(item.renewalDate) }}</p>
+
+      <p class="amount" *ngIf="item.billingCycle === 'monthly'">
+        Monthly: {{ money(item.amount) }}
+      </p>
+
+      <div *ngIf="item.billingCycle === 'annual'" class="annual-block">
+        <p>Annual: {{ money(item.amount) }}</p>
+        <p>Monthly equivalent: {{ monthlyEquivalent(item) }}</p>
+      </div>
+
+      <p class="meta">{{ item.note || 'No note' }}</p>
+
+      <div class="row-actions">
+        <button type="button" class="ghost" (click)="toggleActive(item.id)">
+          {{ item.active ? 'Set Inactive' : 'Set Active' }}
+        </button>
+        <button type="button" class="ghost" (click)="edit(item)">Edit</button>
+        <button type="button" class="danger" (click)="askDelete(item.id)">Delete</button>
+      </div>
+    </article>
+  </div>
+</section>
+
+<app-confirm-dialog
+  [open]="!!deleteCandidateId"
+  title="Delete subscription"
+  message="This subscription will be removed permanently."
+  confirmLabel="Delete"
+  (cancel)="deleteCandidateId = ''"
+  (confirm)="confirmDelete()"
+></app-confirm-dialog>

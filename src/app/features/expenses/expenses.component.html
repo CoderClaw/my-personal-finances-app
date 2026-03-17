@@ -1,0 +1,102 @@
+<app-page-header
+  title="Expenses"
+  subtitle="Track one-time spending and browse by month."
+></app-page-header>
+
+<section class="panel form-panel">
+  <h2>{{ editingId ? 'Edit expense' : 'Add expense' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="form-grid">
+    <label>
+      Title
+      <input type="text" formControlName="title" />
+      <small *ngIf="form.controls.title.invalid && form.controls.title.touched"
+        >Title is required.</small
+      >
+    </label>
+
+    <label>
+      Amount
+      <input type="number" min="0" step="0.01" formControlName="amount" />
+      <small *ngIf="form.controls.amount.invalid && form.controls.amount.touched"
+        >Amount must be greater than 0.</small
+      >
+    </label>
+
+    <label>
+      Date
+      <input type="date" formControlName="date" />
+      <small *ngIf="form.controls.date.invalid && form.controls.date.touched"
+        >Date is required.</small
+      >
+    </label>
+
+    <label>
+      Category
+      <select formControlName="category">
+        <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+      </select>
+    </label>
+
+    <label class="wide">
+      Note (optional)
+      <textarea rows="2" formControlName="note"></textarea>
+    </label>
+
+    <div class="actions">
+      <button type="submit" [disabled]="form.invalid">{{ submitLabel }}</button>
+      <button *ngIf="editingId" type="button" class="ghost" (click)="cancelEdit()">Cancel</button>
+    </div>
+  </form>
+</section>
+
+<section class="panel">
+  <div class="list-header">
+    <h2>Expense list</h2>
+    <label>
+      Month
+      <input type="month" [formControl]="monthFilter" />
+    </label>
+  </div>
+
+  <app-empty-state
+    *ngIf="expenses.length === 0"
+    title="No expenses for this month"
+    message="Try changing month filter or add a new expense."
+  ></app-empty-state>
+
+  <table *ngIf="expenses.length > 0">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Date</th>
+        <th>Amount</th>
+        <th>Note</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of expenses">
+        <td>{{ item.title }}</td>
+        <td>{{ item.category }}</td>
+        <td>{{ date(item.date) }}</td>
+        <td>{{ money(item.amount) }}</td>
+        <td>{{ item.note || '-' }}</td>
+        <td class="row-actions">
+          <button type="button" class="ghost" (click)="edit(item)">Edit</button>
+          <button type="button" class="danger" (click)="askDelete(item.id)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<app-confirm-dialog
+  [open]="!!deleteCandidateId"
+  title="Delete expense"
+  message="This expense will be removed permanently."
+  confirmLabel="Delete"
+  (cancel)="deleteCandidateId = ''"
+  (confirm)="confirmDelete()"
+></app-confirm-dialog>
